@@ -1,0 +1,34 @@
+<div class="container" style="padding: 20px; max-width: 800px; margin: auto; font-family: sans-serif;">
+  <h2>Resolve - Support Ticket Management</h2>
+
+  <div style="margin-bottom: 30px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background: #fff;">
+    <h3>Create a New Ticket</h3>
+    <form (ngSubmit)="onSubmit()">
+      <div style="margin-bottom: 12px;">
+        <label style="display: block; font-weight: bold; margin-bottom: 4px;">Title</label>
+        <input type="text" [(ngModel)]="newTicket.title" name="title" required style="width: 100%; padding: 8px; box-sizing: border-box;">
+      </div>
+      <div style="margin-bottom: 12px;">
+        <label style="display: block; font-weight: bold; margin-bottom: 4px;">Description (Try typing "urgent" to test smart triage)</label>
+        <textarea [(ngModel)]="newTicket.description" name="description" rows="3" required style="width: 100%; padding: 8px; box-sizing: border-box;"></textarea>
+      </div>
+      <button type="submit" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
+        Submit Ticket
+      </button>
+    </form>
+  </div>
+
+  <h3>Ticket Queue</h3>
+  <div *ngIf="tickets.length === 0" style="color: #666;">No tickets found.</div>
+  
+  <div *ngFor="let ticket of tickets" style="border: 1px solid #eee; padding: 15px; margin-bottom: 12px; border-radius: 6px; background: #fdfdfd;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h4 style="margin: 0 0 8px 0;">{{ ticket.title }}</h4>
+      <span style="font-size: 0.85em; padding: 4px 8px; background: #e2e8f0; border-radius: 4px; font-weight: bold;">
+        {{ ticket.priority }}
+      </span>
+    </div>
+    <p style="margin: 0 0 10px 0; color: #333;">{{ ticket.description }}</p>
+    <small style="color: #777;">Status: <strong>{{ ticket.status }}</strong> | Created: {{ ticket.createdAt | date:'medium' }}</small>
+  </div>
+</div>

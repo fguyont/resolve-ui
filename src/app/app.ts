@@ -1,12 +1,12 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
+import { TicketListComponent } from './components/ticket-list/ticket-list';
 
 @Component({
-  imports: [RouterOutlet],
   selector: 'app-root',
-  styleUrl: './app.css',
-  templateUrl: './app.html',
+  standalone: true,
+  imports: [TicketListComponent],
+  template: `<app-ticket-list></app-ticket-list>`
 })
 export class App {
-  protected readonly title = signal('ResolveUi');
+  title = 'ResolveUi';
 }
