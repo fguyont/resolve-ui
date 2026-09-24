@@ -7,6 +7,7 @@ export interface Ticket {
   description: string;
   status?: TicketStatus;
   priority?: TicketPriority;
+  aiAnalysis?: string;
   createdAt?: string;
   updatedAt?: string;
 }

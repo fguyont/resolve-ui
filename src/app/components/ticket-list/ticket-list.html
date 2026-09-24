@@ -1,34 +1,49 @@
-<div class="container" style="padding: 20px; max-width: 800px; margin: auto; font-family: sans-serif;">
-  <h2>Resolve - Support Ticket Management</h2>
-
-  <div style="margin-bottom: 30px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background: #fff;">
-    <h3>Create a New Ticket</h3>
-    <form (ngSubmit)="onSubmit()">
-      <div style="margin-bottom: 12px;">
-        <label style="display: block; font-weight: bold; margin-bottom: 4px;">Title</label>
-        <input type="text" [(ngModel)]="newTicket.title" name="title" required style="width: 100%; padding: 8px; box-sizing: border-box;">
-      </div>
-      <div style="margin-bottom: 12px;">
-        <label style="display: block; font-weight: bold; margin-bottom: 4px;">Description (Try typing "urgent" to test smart triage)</label>
-        <textarea [(ngModel)]="newTicket.description" name="description" rows="3" required style="width: 100%; padding: 8px; box-sizing: border-box;"></textarea>
-      </div>
-      <button type="submit" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
-        Submit Ticket
-      </button>
-    </form>
-  </div>
-
-  <h3>Ticket Queue</h3>
-  <div *ngIf="tickets.length === 0" style="color: #666;">No tickets found.</div>
-  
-  <div *ngFor="let ticket of tickets" style="border: 1px solid #eee; padding: 15px; margin-bottom: 12px; border-radius: 6px; background: #fdfdfd;">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h4 style="margin: 0 0 8px 0;">{{ ticket.title }}</h4>
-      <span style="font-size: 0.85em; padding: 4px 8px; background: #e2e8f0; border-radius: 4px; font-weight: bold;">
-        {{ ticket.priority }}
-      </span>
+<div style="max-width: 600px; margin: 20px auto; font-family: Arial, sans-serif;">
+  <h2>Create a New Ticket</h2>
+  <form (ngSubmit)="onSubmit()" style="margin-bottom: 30px;">
+    <div style="margin-bottom: 10px;">
+      <label style="display: block; font-weight: bold;">Title:</label>
+      <input type="text" [(ngModel)]="newTicket.title" name="title" required style="width: 100%; padding: 8px;" />
     </div>
-    <p style="margin: 0 0 10px 0; color: #333;">{{ ticket.description }}</p>
-    <small style="color: #777;">Status: <strong>{{ ticket.status }}</strong> | Created: {{ ticket.createdAt | date:'medium' }}</small>
+
+    <div style="margin-bottom: 10px;">
+      <label style="display: block; font-weight: bold;">Description:</label>
+      <textarea [(ngModel)]="newTicket.description" name="description" required rows="3" style="width: 100%; padding: 8px;"></textarea>
+    </div>
+
+    <div style="margin-bottom: 10px;">
+      <label style="display: block; font-weight: bold;">Priority:</label>
+      <select [(ngModel)]="newTicket.priority" name="priority" style="width: 100%; padding: 8px;">
+        <option value="LOW">LOW</option>
+        <option value="MEDIUM">MEDIUM</option>
+        <option value="HIGH">HIGH</option>
+        <option value="CRITICAL">CRITICAL</option>
+      </select>
+    </div>
+
+    <button type="submit" style="padding: 10px 15px; background: #007bff; color: white; border: none; cursor: pointer;">
+      Submit Ticket
+    </button>
+  </form>
+
+  <hr />
+
+  <h2>Tickets List</h2>
+  <div *ngIf="tickets.length === 0">No tickets found.</div>
+
+  <div *ngFor="let ticket of tickets" style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 5px;">
+    <h3>{{ ticket.title }}</h3>
+    <p>{{ ticket.description }}</p>
+    <p>
+      <strong>Status:</strong> {{ ticket.status }} | 
+      <strong>Priority:</strong> {{ ticket.priority }}
+    </p>
+
+    <div *ngIf="ticket.aiAnalysis" style="background: #eef2f7; padding: 10px; margin-top: 10px; border-left: 4px solid #007bff;">
+      <strong>AI Analysis:</strong>
+      <p style="margin: 5px 0 0 0; white-space: pre-line;">{{ ticket.aiAnalysis }}</p>
+    </div>
+
+    <small style="color: gray; display: block; margin-top: 10px;">Created: {{ ticket.createdAt | date:'short' }}</small>
   </div>
 </div>
