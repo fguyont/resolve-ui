@@ -45,5 +45,6 @@
     </div>
 
     <small style="color: gray; display: block; margin-top: 10px;">Created: {{ ticket.createdAt | date:'short' }}</small>
+    <small *ngIf="ticket.updatedAt" style="color: gray; display: block; margin-top: 10px;">Updated: {{ ticket.updatedAt | date:'short' }}</small>
   </div>
 </div>
