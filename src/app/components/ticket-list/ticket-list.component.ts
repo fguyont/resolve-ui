@@ -8,8 +8,8 @@ import { TicketService } from '../../services/ticket.service';
   selector: 'app-ticket-list',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './ticket-list.html',
-  styleUrl: './ticket-list.css'
+  templateUrl: './ticket-list.component.html',
+  styleUrl: './ticket-list.component.css'
 })
 export class TicketListComponent implements OnInit {
   tickets: Ticket[] = [];
@@ -24,8 +24,12 @@ export class TicketListComponent implements OnInit {
 
   loadTickets(): void {
     this.ticketService.getTickets().subscribe({
-      next: (data) => this.tickets = data,
-      error: (err) => console.error('Error fetching tickets', err)
+      next: (data) => {
+        console.log('✅ Données reçues dans le composant :', data);
+        this.tickets = data;
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error loading tickets', err)
     });
   }
 
