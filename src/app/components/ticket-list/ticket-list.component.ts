@@ -1,5 +1,5 @@
-import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectorRef, Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Ticket } from '../../models/ticket.model';
 import { TicketService } from '../../services/ticket.service';
@@ -15,11 +15,14 @@ export class TicketListComponent implements OnInit {
   tickets: Ticket[] = [];
   newTicket: Ticket = { title: '', description: '', priority: 'LOW' };
   private cdr = inject(ChangeDetectorRef);
+  private platformId = inject(PLATFORM_ID);
 
   constructor(private ticketService: TicketService) {}
 
   ngOnInit(): void {
-    this.loadTickets();
+    if (isPlatformBrowser(this.platformId)) {
+      this.loadTickets();
+    }
   }
 
   loadTickets(): void {
