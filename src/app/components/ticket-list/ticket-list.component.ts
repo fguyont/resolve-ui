@@ -1,8 +1,12 @@
-import { ChangeDetectorRef, Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Ticket } from '../../models/ticket.model';
+import { TicketStatus } from '../../models/ticket-status';
 import { TicketService } from '../../services/ticket.service';
+import { CreateTicketDto } from '../../dtos/requests/create-ticket-dto';
+import { UpdateTicketDto } from '../../dtos/requests/update-ticket-dto';
+import { TicketPriority } from '../../models/ticket-priority';
 
 @Component({
   selector: 'app-ticket-list',
@@ -12,38 +16,101 @@ import { TicketService } from '../../services/ticket.service';
   styleUrl: './ticket-list.component.css'
 })
 export class TicketListComponent implements OnInit {
-  tickets: Ticket[] = [];
-  newTicket: Ticket = { title: '', description: '', priority: 'LOW' };
-  private cdr = inject(ChangeDetectorRef);
-  private platformId = inject(PLATFORM_ID);
+  tickets: (Ticket & { isEditing?: boolean; editDto?: UpdateTicketDto })[] = [];
 
-  constructor(private ticketService: TicketService) {}
+  newTicket: CreateTicketDto = {
+    title: '',
+    description: '',
+    priority: TicketPriority.LOW
+  };
+
+  constructor(
+    private ticketService: TicketService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      this.loadTickets();
-    }
+    this.loadTickets();
   }
 
-  loadTickets(): void {
+  loadTickets() {
     this.ticketService.getTickets().subscribe({
       next: (data) => {
-        console.log('✅ Données reçues dans le composant :', data);
-        this.tickets = data;
+        this.tickets = data.map(ticket => ({
+          ...ticket,
+          isEditing: false,
+          editDto: undefined
+        }));
         this.cdr.detectChanges();
       },
-      error: (err) => console.error('Error loading tickets', err)
+      error: (err) => console.error('Erreur chargement tickets', err)
     });
   }
 
   onSubmit(): void {
     this.ticketService.createTicket(this.newTicket).subscribe({
       next: (created) => {
-        this.tickets.unshift(created);
-        this.newTicket = { title: '', description: '', priority: 'LOW' };
-        this.cdr.detectChanges();
+        this.tickets.unshift({
+          ...created,
+          isEditing: false,
+          editDto: undefined
+        });
+        this.newTicket = {
+          title: '',
+          description: '',
+          priority: TicketPriority.MEDIUM
+        };
+        this.loadTickets();
       },
       error: (err) => console.error('Error creating ticket', err)
+    });
+  }
+
+  onStatusChange(ticket: Ticket, newStatus: TicketStatus): void {
+    if (!ticket.id) return;
+    this.ticketService.updateTicketStatus(ticket.id, newStatus).subscribe({
+      next: (updated) => {
+        ticket.status = updated.status;
+        ticket.updatedAt = updated.updatedAt;
+      },
+      error: (err) => console.error('Error updating status', err)
+    });
+  }
+
+  onArchive(ticket: Ticket): void {
+    if (!ticket.id) return;
+    this.ticketService.archiveTicket(ticket.id).subscribe({
+      next: () => {
+        this.loadTickets();
+      },
+      error: (err) => console.error('Error archiving ticket', err)
+    });
+  }
+
+  startEdit(ticket: Ticket & { isEditing?: boolean; editDto?: UpdateTicketDto }): void {
+    ticket.isEditing = true;
+    ticket.editDto = {
+      title: ticket.title,
+      description: ticket.description,
+      priority: ticket.priority ?? TicketPriority.MEDIUM
+    };
+  }
+
+  cancelEdit(ticket: Ticket & { isEditing?: boolean }): void {
+    ticket.isEditing = false;
+  }
+
+  saveEdit(ticket: Ticket & { isEditing?: boolean; editDto?: UpdateTicketDto }): void {
+    if (!ticket.id || !ticket.editDto) return;
+    this.ticketService.updateTicketContent(ticket.id, ticket.editDto).subscribe({
+      next: (updated) => {
+        ticket.title = updated.title;
+        ticket.description = updated.description;
+        ticket.priority = updated.priority;
+        ticket.updatedAt = updated.updatedAt;
+        ticket.isEditing = false;
+      },
+      error: (err) => console.error('Error updating ticket content', err)
     });
   }
 }

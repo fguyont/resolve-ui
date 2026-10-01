@@ -32,19 +32,76 @@
   <div *ngIf="tickets.length === 0">No tickets found.</div>
 
   <div *ngFor="let ticket of tickets" style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 5px;">
-    <h3>{{ ticket.title }}</h3>
-    <p>{{ ticket.description }}</p>
-    <p>
-      <strong>Status:</strong> {{ ticket.status }} | 
-      <strong>Priority:</strong> {{ ticket.priority }}
-    </p>
+    
+    <!-- MODE AFFICHAGE -->
+    <div *ngIf="!ticket.isEditing">
+      <h3>{{ ticket.title }}</h3>
+      <p>{{ ticket.description }}</p>
+      
+      <p style="display: flex; align-items: center; gap: 10px;">
+        <strong>Status:</strong> 
+        <!-- Sélecteur de statut sécurisé avec ngModelChange -->
+        <select [ngModel]="ticket.status" (ngModelChange)="onStatusChange(ticket, $event)" style="padding: 4px;">
+          <option value="OPEN">OPEN</option>
+          <option value="IN_PROGRESS">IN_PROGRESS</option>
+          <option value="RESOLVED">RESOLVED</option>
+          <option value="CLOSED">CLOSED</option>
+          <option value="ARCHIVED">ARCHIVED</option>
+        </select>
+        | 
+        <strong>Priority:</strong> {{ ticket.priority }}
+      </p>
 
-    <div *ngIf="ticket.aiAnalysis" style="background: #eef2f7; padding: 10px; margin-top: 10px; border-left: 4px solid #007bff;">
-      <strong>AI Analysis:</strong>
-      <p style="margin: 5px 0 0 0; white-space: pre-line;">{{ ticket.aiAnalysis }}</p>
+      <div *ngIf="ticket.aiAnalysis" style="background: #eef2f7; padding: 10px; margin-top: 10px; border-left: 4px solid #007bff;">
+        <strong>AI Analysis:</strong>
+        <p style="margin: 5px 0 0 0; white-space: pre-line;">{{ ticket.aiAnalysis }}</p>
+      </div>
+
+      <!-- Boutons d'action -->
+      <div style="margin-top: 15px; display: flex; gap: 10px;">
+        <button (click)="startEdit(ticket)" style="padding: 5px 10px; background: #6c757d; color: white; border: none; cursor: pointer; border-radius: 3px;">
+          Edit
+        </button>
+        <button *ngIf="ticket.status !== 'ARCHIVED'" (click)="onArchive(ticket)" style="padding: 5px 10px; background: #ffc107; border: none; cursor: pointer; border-radius: 3px;">
+          Archive
+        </button>
+      </div>
+    </div>
+
+    <!-- MODE ÉDITION -->
+    <div *ngIf="ticket.isEditing && ticket.editDto">
+      <h4>Edit Ticket</h4>
+      <div style="margin-bottom: 10px;">
+        <label style="display: block; font-weight: bold;">Title:</label>
+        <input type="text" [(ngModel)]="ticket.editDto.title" style="width: 100%; padding: 6px;" />
+      </div>
+
+      <div style="margin-bottom: 10px;">
+        <label style="display: block; font-weight: bold;">Description:</label>
+        <textarea [(ngModel)]="ticket.editDto.description" rows="3" style="width: 100%; padding: 6px;"></textarea>
+      </div>
+
+      <div style="margin-bottom: 10px;">
+        <label style="display: block; font-weight: bold;">Priority:</label>
+        <select [(ngModel)]="ticket.editDto.priority" style="width: 100%; padding: 6px;">
+          <option value="LOW">LOW</option>
+          <option value="MEDIUM">MEDIUM</option>
+          <option value="HIGH">HIGH</option>
+          <option value="CRITICAL">CRITICAL</option>
+        </select>
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <button (click)="saveEdit(ticket)" style="padding: 5px 10px; background: #28a745; color: white; border: none; cursor: pointer; border-radius: 3px;">
+          Save
+        </button>
+        <button (click)="cancelEdit(ticket)" style="padding: 5px 10px; background: #dc3545; color: white; border: none; cursor: pointer; border-radius: 3px;">
+          Cancel
+        </button>
+      </div>
     </div>
 
     <small style="color: gray; display: block; margin-top: 10px;">Created: {{ ticket.createdAt | date:'short' }}</small>
-    <small *ngIf="ticket.updatedAt" style="color: gray; display: block; margin-top: 10px;">Updated: {{ ticket.updatedAt | date:'short' }}</small>
+    <small *ngIf="ticket.updatedAt" style="color: gray; display: block; margin-top: 5px;">Updated: {{ ticket.updatedAt | date:'short' }}</small>
   </div>
 </div>
