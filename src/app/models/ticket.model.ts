@@ -1,5 +1,5 @@
-export type TicketStatus = 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
-export type TicketPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+import { TicketPriority } from "./ticket-priority";
+import { TicketStatus } from "./ticket-status";
 
 export interface Ticket {
   id?: number;
