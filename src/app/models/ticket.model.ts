@@ -8,6 +8,9 @@ export interface Ticket {
   status?: TicketStatus;
   priority?: TicketPriority;
   aiAnalysis?: string;
+  createdById: number;
+  createdByName?: string;
+  assignedAgentId?: number;
   createdAt?: string;
   updatedAt?: string;
 }
