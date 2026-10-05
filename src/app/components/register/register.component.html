@@ -2,6 +2,17 @@
   <h2>Create an Account</h2>
 
   <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    
+    <!-- Username Field -->
+    <div class="form-group">
+      <label for="name">Username</label>
+      <input id="name" type="text" formControlName="name" class="form-control" />
+      <div *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched" class="error-message">
+        <small *ngIf="registerForm.get('name')?.errors?.['required']">Username is required.</small>
+      </div>
+    </div>
+
+    <!-- Email Field -->
     <div class="form-group">
       <label for="email">Email</label>
       <input id="email" type="email" formControlName="email" class="form-control" />
@@ -11,13 +22,23 @@
       </div>
     </div>
 
+    <!-- Password Field (clearPassword) -->
     <div class="form-group">
       <label for="password">Password</label>
-      <input id="password" type="password" formControlName="password" class="form-control" />
-      <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="error-message">
-        <small *ngIf="registerForm.get('password')?.errors?.['required']">Password is required.</small>
-        <small *ngIf="registerForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters long.</small>
+      <input id="password" type="password" formControlName="clearPassword" class="form-control" />
+      <div *ngIf="registerForm.get('clearPassword')?.invalid && registerForm.get('clearPassword')?.touched" class="error-message">
+        <small *ngIf="registerForm.get('clearPassword')?.errors?.['required']">Password is required.</small>
+        <small *ngIf="registerForm.get('clearPassword')?.errors?.['minlength']">Password must be at least 6 characters long.</small>
       </div>
+    </div>
+
+    <!-- Role Selection Field -->
+    <div class="form-group">
+      <label for="role">Role</label>
+      <select id="role" formControlName="role" class="form-control">
+        <option [value]="roles.CLIENT">Client</option>
+        <option [value]="roles.AGENT">Agent</option>
+      </select>
     </div>
 
     <div *ngIf="errorMessage" class="alert-error">

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { Role } from '../../models/role';
 
 @Component({
   selector: 'app-register',
@@ -15,6 +16,8 @@ export class RegisterComponent {
   registerForm: FormGroup;
   errorMessage: string = '';
   successMessage: string = '';
+  
+  roles = Role; 
 
   constructor(
     private fb: FormBuilder,
@@ -22,8 +25,10 @@ export class RegisterComponent {
     private router: Router
   ) {
     this.registerForm = this.fb.group({
+      name: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      clearPassword: ['', [Validators.required, Validators.minLength(6)]],
+      role: [Role.CLIENT, [Validators.required]]
     });
   }
 
@@ -38,7 +43,7 @@ export class RegisterComponent {
         },
         error: (err) => {
           console.error('Registration failed', err);
-          this.errorMessage = 'An error occurred during registration.';
+          this.errorMessage = err.error?.message || 'An error occurred during registration.';
         }
       });
     }
