@@ -11,16 +11,6 @@
       <textarea [(ngModel)]="newTicket.description" name="description" required rows="3" style="width: 100%; padding: 8px;"></textarea>
     </div>
 
-    <div style="margin-bottom: 10px;">
-      <label style="display: block; font-weight: bold;">Priority:</label>
-      <select [(ngModel)]="newTicket.priority" name="priority" style="width: 100%; padding: 8px;">
-        <option value="LOW">LOW</option>
-        <option value="MEDIUM">MEDIUM</option>
-        <option value="HIGH">HIGH</option>
-        <option value="CRITICAL">CRITICAL</option>
-      </select>
-    </div>
-
     <button type="submit" style="padding: 10px 15px; background: #007bff; color: white; border: none; cursor: pointer;">
       Submit Ticket
     </button>
@@ -33,21 +23,21 @@
 
   <div *ngFor="let ticket of tickets" style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 5px;">
     
-    <!-- MODE AFFICHAGE -->
     <div *ngIf="!ticket.isEditing">
       <h3>{{ ticket.title }}</h3>
       <p>{{ ticket.description }}</p>
       
-      <p style="display: flex; align-items: center; gap: 10px;">
+      <p style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
         <strong>Status:</strong> 
-        <!-- Sélecteur de statut sécurisé avec ngModelChange -->
-        <select [ngModel]="ticket.status" (ngModelChange)="onStatusChange(ticket, $event)" style="padding: 4px;">
+        <select *ngIf="isAgent" [ngModel]="ticket.status" (ngModelChange)="onStatusChange(ticket, $event)" style="padding: 4px;">
           <option value="OPEN">OPEN</option>
           <option value="IN_PROGRESS">IN_PROGRESS</option>
           <option value="RESOLVED">RESOLVED</option>
           <option value="CLOSED">CLOSED</option>
           <option value="ARCHIVED">ARCHIVED</option>
         </select>
+        <span *ngIf="!isAgent" style="background: #e9ecef; padding: 2px 6px; border-radius: 3px;">{{ ticket.status }}</span>
+
         | 
         <strong>Priority:</strong> {{ ticket.priority }}
       </p>
@@ -57,7 +47,11 @@
         <p style="margin: 5px 0 0 0; white-space: pre-line;">{{ ticket.aiAnalysis }}</p>
       </div>
 
-      <!-- Boutons d'action -->
+      <div style="font-size: 0.85em; color: #666; margin-top: 10px;">
+        <small>Created by: <strong>{{ ticket.createdByName }}</strong></small>
+        <span *ngIf="ticket.assignedAgentId"> | Assigned to: <code>{{ ticket.assignedAgentId }}</code></span>
+      </div>
+
       <div style="margin-top: 15px; display: flex; gap: 10px;">
         <button (click)="startEdit(ticket)" style="padding: 5px 10px; background: #6c757d; color: white; border: none; cursor: pointer; border-radius: 3px;">
           Edit
@@ -68,7 +62,6 @@
       </div>
     </div>
 
-    <!-- MODE ÉDITION -->
     <div *ngIf="ticket.isEditing && ticket.editDto">
       <h4>Edit Ticket</h4>
       <div style="margin-bottom: 10px;">
@@ -81,8 +74,8 @@
         <textarea [(ngModel)]="ticket.editDto.description" rows="3" style="width: 100%; padding: 6px;"></textarea>
       </div>
 
-      <div style="margin-bottom: 10px;">
-        <label style="display: block; font-weight: bold;">Priority:</label>
+      <div *ngIf="isAgent" style="margin-bottom: 10px;">
+        <label style="display: block; font-weight: bold;">Priority (Agent only):</label>
         <select [(ngModel)]="ticket.editDto.priority" style="width: 100%; padding: 6px;">
           <option value="LOW">LOW</option>
           <option value="MEDIUM">MEDIUM</option>

@@ -17,6 +17,7 @@ import { TicketPriority } from '../../models/ticket-priority';
 })
 export class TicketListComponent implements OnInit {
   tickets: (Ticket & { isEditing?: boolean; editDto?: UpdateTicketDto })[] = [];
+  includeArchived: boolean = false;
 
   newTicket: CreateTicketDto = {
     title: '',
@@ -33,8 +34,8 @@ export class TicketListComponent implements OnInit {
     this.loadTickets();
   }
 
-  loadTickets() {
-    this.ticketService.getTickets().subscribe({
+  loadTickets(): void {
+    this.ticketService.getTickets(this.includeArchived).subscribe({
       next: (data) => {
         this.tickets = data.map(ticket => ({
           ...ticket,
@@ -49,12 +50,7 @@ export class TicketListComponent implements OnInit {
 
   onSubmit(): void {
     this.ticketService.createTicket(this.newTicket).subscribe({
-      next: (created) => {
-        this.tickets.unshift({
-          ...created,
-          isEditing: false,
-          editDto: undefined
-        });
+      next: () => {
         this.newTicket = {
           title: '',
           description: '',
@@ -72,8 +68,12 @@ export class TicketListComponent implements OnInit {
       next: (updated) => {
         ticket.status = updated.status;
         ticket.updatedAt = updated.updatedAt;
+        ticket.assignedAgentId = updated.assignedAgentId;
       },
-      error: (err) => console.error('Error updating status', err)
+      error: (err) => {
+        console.error('Error updating status', err);
+        alert(err.error?.message || 'Action non autorisée.');
+      }
     });
   }
 
@@ -112,5 +112,9 @@ export class TicketListComponent implements OnInit {
       },
       error: (err) => console.error('Error updating ticket content', err)
     });
+  }
+
+  get isAgent(): boolean {
+    return localStorage.getItem('user_role') === 'Agent';
   }
 }
