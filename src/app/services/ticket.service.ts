@@ -12,7 +12,7 @@ import { TicketStatus } from '../models/ticket-status';
 export class TicketService {
   private apiUrl = 'http://localhost:5076/api/tickets';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getTickets(includeArchived: boolean = false): Observable<Ticket[]> {
     const params = new HttpParams().set('includeArchived', includeArchived.toString());
@@ -27,12 +27,8 @@ export class TicketService {
     return this.http.post<Ticket>(this.apiUrl, dto);
   }
 
-  updateTicketContent(id: number, dto: UpdateTicketDto): Observable<Ticket> {
+  updateTicket(id: number, dto: UpdateTicketDto): Observable<Ticket> {
     return this.http.put<Ticket>(`${this.apiUrl}/${id}`, dto);
-  }
-
-  updateTicketStatus(id: number, status: TicketStatus): Observable<Ticket> {
-    return this.http.patch<Ticket>(`${this.apiUrl}/${id}/status`, { status });
   }
 
   archiveTicket(id: number): Observable<Ticket> {

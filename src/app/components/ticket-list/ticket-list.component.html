@@ -8,7 +8,8 @@
 
     <div style="margin-bottom: 10px;">
       <label style="display: block; font-weight: bold;">Description:</label>
-      <textarea [(ngModel)]="newTicket.description" name="description" required rows="3" style="width: 100%; padding: 8px;"></textarea>
+      <textarea [(ngModel)]="newTicket.description" name="description" required rows="3"
+        style="width: 100%; padding: 8px;"></textarea>
     </div>
 
     <button type="submit" style="padding: 10px 15px; background: #007bff; color: white; border: none; cursor: pointer;">
@@ -21,42 +22,50 @@
   <h2>Tickets List</h2>
   <div *ngIf="tickets.length === 0">No tickets found.</div>
 
-  <div *ngFor="let ticket of tickets" style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 5px;">
-    
+  <div *ngFor="let ticket of tickets"
+    style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 5px;">
+
     <div *ngIf="!ticket.isEditing">
       <h3>{{ ticket.title }}</h3>
       <p>{{ ticket.description }}</p>
-      
-      <p style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-        <strong>Status:</strong> 
-        <select *ngIf="isAgent" [ngModel]="ticket.status" (ngModelChange)="onStatusChange(ticket, $event)" style="padding: 4px;">
-          <option value="OPEN">OPEN</option>
-          <option value="IN_PROGRESS">IN_PROGRESS</option>
-          <option value="RESOLVED">RESOLVED</option>
-          <option value="CLOSED">CLOSED</option>
-          <option value="ARCHIVED">ARCHIVED</option>
-        </select>
-        <span *ngIf="!isAgent" style="background: #e9ecef; padding: 2px 6px; border-radius: 3px;">{{ ticket.status }}</span>
 
-        | 
-        <strong>Priority:</strong> {{ ticket.priority }}
+      <p style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <strong>Status:</strong>
+        <span style="background: #e9ecef; padding: 2px 6px; border-radius: 3px;">{{ ticket.status }}</span>
+
+        |
+        <strong>Priority:</strong>
+        <span>{{ ticket.priority }}</span>
       </p>
 
-      <div *ngIf="ticket.aiAnalysis" style="background: #eef2f7; padding: 10px; margin-top: 10px; border-left: 4px solid #007bff;">
+      <div *ngIf="ticket.aiAnalysis"
+        style="background: #eef2f7; padding: 10px; margin-top: 10px; border-left: 4px solid #007bff;">
         <strong>AI Analysis:</strong>
         <p style="margin: 5px 0 0 0; white-space: pre-line;">{{ ticket.aiAnalysis }}</p>
       </div>
 
       <div style="font-size: 0.85em; color: #666; margin-top: 10px;">
         <small>Created by: <strong>{{ ticket.createdByName }}</strong></small>
-        <span *ngIf="ticket.assignedAgentId"> | Assigned to: <code>{{ ticket.assignedAgentId }}</code></span>
+        <span *ngIf="ticket.assignedAgentName">
+          | Assigned to: <strong>{{ ticket.assignedAgentName }}</strong>
+        </span>
+        <span *ngIf="!ticket.assignedAgentName && isAgent">
+          | <em>Unassigned</em>
+        </span>
       </div>
 
-      <div style="margin-top: 15px; display: flex; gap: 10px;">
-        <button (click)="startEdit(ticket)" style="padding: 5px 10px; background: #6c757d; color: white; border: none; cursor: pointer; border-radius: 3px;">
+      <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+        <button *ngIf="isAgent && !ticket.assignedAgentId" (click)="takeCharge(ticket)"
+          style="padding: 5px 10px; background: #17a2b8; color: white; border: none; cursor: pointer; border-radius: 3px;">
+          Take charge
+        </button>
+
+        <button (click)="startEdit(ticket)"
+          style="padding: 5px 10px; background: #6c757d; color: white; border: none; cursor: pointer; border-radius: 3px;">
           Edit
         </button>
-        <button *ngIf="ticket.status !== 'ARCHIVED'" (click)="onArchive(ticket)" style="padding: 5px 10px; background: #ffc107; border: none; cursor: pointer; border-radius: 3px;">
+        <button *ngIf="isAgent && ticket.status !== 'ARCHIVED'" (click)="onArchive(ticket)"
+          style="padding: 5px 10px; background: #ffc107; border: none; cursor: pointer; border-radius: 3px;">
           Archive
         </button>
       </div>
@@ -75,6 +84,17 @@
       </div>
 
       <div *ngIf="isAgent" style="margin-bottom: 10px;">
+        <label style="display: block; font-weight: bold;">Status (Agent only):</label>
+        <select [(ngModel)]="ticket.editDto.status" style="width: 100%; padding: 6px;">
+          <option value="OPEN">OPEN</option>
+          <option value="IN_PROGRESS">IN_PROGRESS</option>
+          <option value="RESOLVED">RESOLVED</option>
+          <option value="CLOSED">CLOSED</option>
+          <option value="ARCHIVED">ARCHIVED</option>
+        </select>
+      </div>
+
+      <div *ngIf="isAgent" style="margin-bottom: 10px;">
         <label style="display: block; font-weight: bold;">Priority (Agent only):</label>
         <select [(ngModel)]="ticket.editDto.priority" style="width: 100%; padding: 6px;">
           <option value="LOW">LOW</option>
@@ -84,17 +104,30 @@
         </select>
       </div>
 
+      <div *ngIf="isAgent" style="margin-bottom: 10px;">
+        <label style="display: block; font-weight: bold;">Assigned Agent (Agent only):</label>
+        <select [(ngModel)]="ticket.editDto.assignedAgentId" style="width: 100%; padding: 6px;">
+          <option [value]="null">-- Unassigned --</option>
+          <option *ngFor="let agent of agents" [value]="agent.id">
+            {{ agent.name }}
+          </option>
+        </select>
+      </div>
+
       <div style="display: flex; gap: 10px;">
-        <button (click)="saveEdit(ticket)" style="padding: 5px 10px; background: #28a745; color: white; border: none; cursor: pointer; border-radius: 3px;">
+        <button (click)="saveEdit(ticket)"
+          style="padding: 5px 10px; background: #28a745; color: white; border: none; cursor: pointer; border-radius: 3px;">
           Save
         </button>
-        <button (click)="cancelEdit(ticket)" style="padding: 5px 10px; background: #dc3545; color: white; border: none; cursor: pointer; border-radius: 3px;">
+        <button (click)="cancelEdit(ticket)"
+          style="padding: 5px 10px; background: #dc3545; color: white; border: none; cursor: pointer; border-radius: 3px;">
           Cancel
         </button>
       </div>
     </div>
 
     <small style="color: gray; display: block; margin-top: 10px;">Created: {{ ticket.createdAt | date:'short' }}</small>
-    <small *ngIf="ticket.updatedAt" style="color: gray; display: block; margin-top: 5px;">Updated: {{ ticket.updatedAt | date:'short' }}</small>
+    <small *ngIf="ticket.updatedAt" style="color: gray; display: block; margin-top: 5px;">Updated: {{ ticket.updatedAt |
+      date:'short' }}</small>
   </div>
 </div>
