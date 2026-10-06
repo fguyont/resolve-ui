@@ -10,7 +10,8 @@ export interface Ticket {
   aiAnalysis?: string;
   createdById: number;
   createdByName?: string;
-  assignedAgentId?: number;
+  assignedAgentId?: number | null;
+  assignedAgentName?: string | null;
   createdAt?: string;
   updatedAt?: string;
 }
