@@ -5,6 +5,8 @@ import { Observable, tap } from 'rxjs';
 import { LoginRequest } from '../dtos/requests/login-request';
 import { AuthResponse } from '../dtos/responses/auth-response';
 import { RegisterRequest } from '../dtos/requests/register-request';
+import { UserInfo } from '../dtos/responses/user-info';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -12,8 +14,10 @@ import { RegisterRequest } from '../dtos/requests/register-request';
 export class AuthService {
   private http = inject(HttpClient);
   private platformId = inject(PLATFORM_ID);
-  
-  private apiUrl = 'http://localhost:5076/api/auth'; 
+
+  private apiUrl = 'http://localhost:5076/api/auth';
+
+  constructor(private router: Router) {}
 
   login(credentials: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
@@ -29,12 +33,15 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/register`, data);
   }
 
-  logout(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem('authToken');
-    }
+  getCurrentUserInfo(): Observable<UserInfo> {
+    return this.http.get<UserInfo>(`${this.apiUrl}/me`);
   }
-  
+
+  logout(): void {
+    localStorage.removeItem('authToken'); 
+    this.router.navigate(['/login']);
+  }
+
   setToken(token: string): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem('authToken', token);
