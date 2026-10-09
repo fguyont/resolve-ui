@@ -103,6 +103,7 @@ export class TicketListComponent implements OnInit {
         ticket.assignedAgentId = updated.assignedAgentId;
         ticket.assignedAgentName = updated.assignedAgentName;
         this.cdr.detectChanges();
+        this.loadTickets();
       },
       error: (err) => {
         console.error('Take charge error.', err);
