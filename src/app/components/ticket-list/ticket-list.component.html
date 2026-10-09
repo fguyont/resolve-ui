@@ -59,7 +59,6 @@
           style="padding: 5px 10px; background: #17a2b8; color: white; border: none; cursor: pointer; border-radius: 3px;">
           Take charge
         </button>
-
         <button (click)="startEdit(ticket)"
           style="padding: 5px 10px; background: #6c757d; color: white; border: none; cursor: pointer; border-radius: 3px;">
           Edit
@@ -107,7 +106,6 @@
       <div *ngIf="isAgent" style="margin-bottom: 10px;">
         <label style="display: block; font-weight: bold;">Assigned Agent (Agent only):</label>
         <select [(ngModel)]="ticket.editDto.assignedAgentId" style="width: 100%; padding: 6px;">
-          <option [value]="null">-- Unassigned --</option>
           <option *ngFor="let agent of agents" [value]="agent.id">
             {{ agent.name }}
           </option>
