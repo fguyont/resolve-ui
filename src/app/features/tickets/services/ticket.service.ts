@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Ticket } from '../models/ticket.model';
-import { CreateTicketDto } from '../dtos/requests/create-ticket-dto';
-import { UpdateTicketDto } from '../dtos/requests/update-ticket-dto';
-import { TicketStatus } from '../models/ticket-status';
+import { Ticket } from '../../../shared/models/ticket.model';
+import { CreateTicketDto } from '../../../shared/dtos/requests/create-ticket-dto';
+import { UpdateTicketDto } from '../../../shared/dtos/requests/update-ticket-dto';
 
 @Injectable({
   providedIn: 'root'

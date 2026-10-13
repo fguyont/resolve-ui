@@ -2,11 +2,11 @@ import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { isPlatformBrowser } from '@angular/common';
 import { Observable, tap } from 'rxjs';
-import { LoginRequest } from '../dtos/requests/login-request';
-import { AuthResponse } from '../dtos/responses/auth-response';
-import { RegisterRequest } from '../dtos/requests/register-request';
-import { UserInfo } from '../dtos/responses/user-info';
 import { Router } from '@angular/router';
+import { LoginRequest } from '../../shared/dtos/requests/login-request';
+import { AuthResponse } from '../../shared/dtos/responses/auth-response';
+import { RegisterRequest } from '../../shared/dtos/requests/register-request';
+import { UserInfo } from '../../shared/dtos/responses/user-info';
 
 @Injectable({
   providedIn: 'root'

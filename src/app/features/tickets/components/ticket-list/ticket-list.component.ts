@@ -1,15 +1,15 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Ticket } from '../../models/ticket.model';
-import { TicketStatus } from '../../models/ticket-status';
+import { Ticket } from '../../../../shared/models/ticket.model';
+import { UpdateTicketDto } from '../../../../shared/dtos/requests/update-ticket-dto';
+import { AgentDto } from '../../../../shared/dtos/responses/agent-dto';
+import { TicketPriority } from '../../../../shared/models/ticket-priority';
+import { TicketStatus } from '../../../../shared/models/ticket-status';
+import { CreateTicketDto } from '../../../../shared/dtos/requests/create-ticket-dto';
 import { TicketService } from '../../services/ticket.service';
-import { AuthService } from '../../services/auth.service';
-import { UserService } from '../../services/user.service'; // <--- Import du UserService
-import { CreateTicketDto } from '../../dtos/requests/create-ticket-dto';
-import { UpdateTicketDto } from '../../dtos/requests/update-ticket-dto';
-import { TicketPriority } from '../../models/ticket-priority';
-import { AgentDto } from '../../dtos/responses/agent-dto';
+import { AuthService } from '../../../../core/services/auth.service';
+import { UserService } from '../../../users/services/user.service';
 
 @Component({
   selector: 'app-ticket-list',
